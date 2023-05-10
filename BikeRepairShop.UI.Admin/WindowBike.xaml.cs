@@ -59,6 +59,7 @@ namespace BikeRepairShop.UI.Admin
                 Bike.Description=DescriptionTextBox.Text;
                 Bike.BikeType = (BikeType)BikeTypeComboBox.SelectedItem;
                 Bike.PurchaseCost=double.Parse(PurchaseCostTextBox.Text);
+                customerManager.ChangeBike(BikeMapper.ToDTO(Bike));
             }
             else
             {
@@ -66,8 +67,9 @@ namespace BikeRepairShop.UI.Admin
                 Bike.Description = DescriptionTextBox.Text;
                 Bike.BikeType = (BikeType)BikeTypeComboBox.SelectedItem;
                 Bike.PurchaseCost = double.Parse(PurchaseCostTextBox.Text);
-                Bike.CustomerId = customerManager.GetLastCustomerId();
+                Bike.CustomerId = CustomerComboBox.SelectedIndex + 1;
                 Bike.Id = customerManager.GetLastBikeId() + 1;
+                Bike.CustomerDescription = customerManager.GetCustomerDescription(CustomerComboBox.SelectedIndex + 1);
                 
                 customerManager.AddBike(BikeMapper.ToDTO(Bike));
             }
@@ -79,7 +81,7 @@ namespace BikeRepairShop.UI.Admin
         {
             if (update)
             {
-                CustomerTextBox.Text = "jos";
+                CustomerTextBox.Text = customerManager.GetCustomerName(Bike.CustomerId);
                 BikeTypeComboBox.SelectedItem = Bike.BikeType;
                 DescriptionTextBox.Text = Bike.Description;
                 IDTextBox.Text=Bike.Id.ToString();

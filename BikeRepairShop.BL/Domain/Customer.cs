@@ -11,20 +11,26 @@ namespace BikeRepairShop.BL.Domain
     {
         public int? ID { get; private set; }
         public string Name { get; private set; }
-        public string Address { get; private set; }
+        public string adress { get; private set; }
         public string Email { get; private set; }
         private List<Bike> Bikes  = new List<Bike>();
         public IReadOnlyList<Bike> GetBikes() { return Bikes.AsReadOnly(); }
         private List<CustomerRepairOrderInfo> CustomerRepairOrderInfos= new List<CustomerRepairOrderInfo>();
 
-        public Customer(int? iD, string name, string address, string email) {
+        public Customer(int? iD, string name, string adress, string email) {
             ID = iD;
             Name = name;
-            Address = address;
+            adress = adress;
             Email = email;
         }
 
         public Customer() {
+        }
+
+        public Customer(string name, string adress, string email) {
+            Name = name;
+            this.adress = adress;
+            Email = email;
         }
 
         public IReadOnlyList<CustomerRepairOrderInfo> GetCustomerRepairOrderInfos() { return CustomerRepairOrderInfos.AsReadOnly();}
@@ -53,10 +59,10 @@ namespace BikeRepairShop.BL.Domain
             if (string.IsNullOrWhiteSpace(email)) throw new DomainException("customer-setemail");
             Email = email;
         }
-        public void SetAddress(string address)
+        public void Setadress(string adress)
         {
-            if (string.IsNullOrWhiteSpace(address)) throw new DomainException("customer-setaddress");
-            Address = address;
+            if (string.IsNullOrWhiteSpace(adress)) throw new DomainException("customer-setadress");
+            adress = adress;
         }
         public void SetId(int id)
         {

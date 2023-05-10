@@ -1,9 +1,11 @@
 ﻿using BikeRepairShop.BL.Domain;
 using BikeRepairShop.BL.DTO;
 using BikeRepairShop.BL.Interfaces;
+using BikeRepairShop.BL.Managers;
 using BikeRepairShop.DL.Exceptions;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 
 namespace BikeRepairShop.DL.Repositories
 {
@@ -72,27 +74,32 @@ namespace BikeRepairShop.DL.Repositories
             }
         }
 
-        public Customer GetCustomer(int id)
-        {
+        public Customer GetCustomer(int? id) {
             try {
                 Customer c = new Customer();
-                string sql = "SELECT Id,Name,Email,Adress FROM Customer WHERE id=@id";
+                string sql = "SELECT Id, Name, Email, Adress FROM Customer WHERE Id = @id";
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (SqlCommand command = connection.CreateCommand()) {
                     connection.Open();
                     command.CommandText = sql;
                     command.Parameters.AddWithValue("@id", id);
+
                     IDataReader reader = command.ExecuteReader();
                     while (reader.Read()) {
-                        c = new Customer((int)reader["id"], (string)reader["Name"], (string)reader["email"], (string)reader["Adress"]);
+                        c.SetId((int)reader["Id"]);
+                        c.SetName((string)reader["Name"]);
+                        c.SetEmail((string)reader["Email"]);
+                        c.Setadress((string)reader["Adress"]);
+                        return c;
                     }
                     reader.Close();
                     return c;
-                }
+                    }
             } catch (Exception ex) {
-                throw new CustomerRepositoryException("GetBikesInfo", ex);
+                throw new CustomerRepositoryException("GetCustomer", ex);
             }
         }
+
 
         public int GetLastBikeId() {
             try {
@@ -129,10 +136,124 @@ namespace BikeRepairShop.DL.Repositories
                         }
                     }
                 }
-                i++;
                 return i;
             } catch (Exception ex) {
                 throw new CustomerRepositoryException("GetLastCustomerId", ex);
+            }
+        }
+        public void DeleteBike(int? bikeId) {
+            try {
+                string sql = "UPDATE Bike SET Status = 0 WHERE Id = @id";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                    using (SqlCommand command = connection.CreateCommand()) {
+                    connection.Open();
+                    command.CommandText = sql;
+                    command.Parameters.AddWithValue("@id", bikeId);
+                    command.ExecuteNonQuery();
+                }
+            } catch (Exception ex) {
+                throw new CustomerRepositoryException("DeleteBike", ex);
+            }
+        }
+
+        public void ChangeBike(BikeInfo bikeInfo) {
+            string sql = "UPDATE Bike SET BikeType = @biketype, PurchaseCost = @purchasecost, Description = @description WHERE Id = @id";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlCommand command = connection.CreateCommand()) {
+                connection.Open();
+                command.CommandText = sql;
+                command.Parameters.AddWithValue("@biketype", bikeInfo.BikeType.ToString());
+                command.Parameters.AddWithValue("@purchasecost", bikeInfo.PurchaseCost);
+                if (bikeInfo.Description != null)
+                    command.Parameters.AddWithValue("@description", bikeInfo.Description);
+                else
+                    command.Parameters.AddWithValue("@description", DBNull.Value);
+                command.Parameters.AddWithValue("@id", bikeInfo.Id);
+                command.ExecuteNonQuery();
+            }
+        }
+        public List<CustomerInfo> GetCustomersInfo() {
+            try {
+                List<CustomerInfo> customers = new List<CustomerInfo>();
+                string sql = "select id, Name, Adress, Email from Customer where Status=1";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlCommand command = connection.CreateCommand()) {
+                    connection.Open();
+                    command.CommandText = sql;
+                    IDataReader reader = command.ExecuteReader();
+                    while (reader.Read()) {
+                        //string d=reader.IsDBNull(reader.GetOrdinal("description")) ? null : (string)reader["description"];
+                        //Enum.Parse(typeof(BikeType), (string)reader["biketype"], true);
+                        customers.Add(new CustomerInfo((int)reader["id"], (string)reader["Name"], (string)reader["Adress"], (string)reader["Email"]));
+                    }
+                    reader.Close();
+                }
+                return customers;
+            } catch (Exception ex) {
+                throw new CustomerRepositoryException("GetBikesInfo", ex);
+            }
+        }
+
+        public void AddCustomer(Customer customer) {
+            try {
+                string sql = "INSERT INTO Customer(Name, Adress, Email,status) output  INSERTED.ID VALUES(@Name,@Adress,@Email,@status)";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlCommand command = connection.CreateCommand()) {
+                    connection.Open();
+                    command.CommandText = sql;
+                    command.Parameters.AddWithValue("@Name", customer.Name);
+                    command.Parameters.AddWithValue("@Adress", customer.adress);
+                    command.Parameters.AddWithValue("@Email", customer.Email);
+                    command.Parameters.AddWithValue("@status", 1);
+                    int bid = (int)command.ExecuteScalar();
+                    customer.SetId(bid);
+                }
+            } catch (Exception ex) {
+                throw new CustomerRepositoryException("AddBike", ex);
+            }
+        }
+
+        public void ChangeCustomer(CustomerInfo customerInfo) {
+            string sql = "UPDATE Customer SET Name = @name, Adress = @adress, Email = @email WHERE Id = @id";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = connection.CreateCommand()) {
+                connection.Open();
+                command.CommandText = sql;
+                command.Parameters.AddWithValue("@name", customerInfo.Name);
+                command.Parameters.AddWithValue("@adress", customerInfo.adress);
+                command.Parameters.AddWithValue("@email", customerInfo.Email);
+                command.Parameters.AddWithValue("@id", customerInfo.ID);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public void DeleteCustomer(int? customerID) {
+            string sql = "UPDATE Customer SET Status = 0 WHERE Id = @id";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = connection.CreateCommand()) {
+                connection.Open();
+                command.CommandText = sql;
+                command.Parameters.AddWithValue("@id", customerID);
+                command.ExecuteNonQuery();
+            }
+        }
+        public CustomerInfo GetCustomerInfoByID(int? id) {
+            try {
+                string sql = "select id, Name, Adress, Email, status from Customer where Id = @id";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (SqlCommand command = connection.CreateCommand()) {
+                    connection.Open();
+                    command.CommandText = sql;
+                    command.Parameters.AddWithValue("@id", id);
+                    IDataReader reader = command.ExecuteReader();
+                    while (reader.Read()) {
+                        return new CustomerInfo((int)reader["id"], (string)reader["Name"], (string)reader["Adress"], (string)reader["Email"]);
+                    }
+                    reader.Close();
+                    return new CustomerInfo(0, "", "", "");
+                }
+            } catch (Exception ex) {
+                throw new CustomerRepositoryException("GetBikesInfo", ex);
             }
         }
     }

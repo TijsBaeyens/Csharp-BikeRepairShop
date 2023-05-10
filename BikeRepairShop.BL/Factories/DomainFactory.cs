@@ -22,5 +22,13 @@ namespace BikeRepairShop.BL.Factories
                 throw new FactoryException("NewBike", ex);
             }
         }
+        public static Customer NewCustomer(CustomerInfo customerInfo) {
+            try {
+                return new Customer(customerInfo.Name, customerInfo.adress, customerInfo.Email);
+            }
+            catch (Exception ex) {
+                throw new FactoryException("NewCustomer", ex);
+            }
+        }
     }
 }

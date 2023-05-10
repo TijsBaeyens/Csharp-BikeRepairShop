@@ -25,7 +25,7 @@
         <Label Content="Purchase cost" Grid.Row="3" Grid.Column="0"/>
         <Label Content="Description" Grid.Row="4" Grid.Column="0"/>
         <ComboBox Name="CustomerComboBox" Grid.Row="0" Grid.Column="1" Margin="5"/>
-        <TextBox Name="CustomerTextBox" Grid.Row="0" Grid.Column="1" Margin="5" Visibility="Hidden"/>
+        <TextBox Name="CustomerTextBox" Grid.Row="0" Grid.Column="1" Margin="5" Visibility="Hidden" IsReadOnly="True"/>
         <TextBox Name="IDTextBox" Grid.Row="1" Grid.Column="1" IsReadOnly="true" Margin="5"/>
         <ComboBox Name="BikeTypeComboBox" Grid.Row="2" Grid.Column="1" Margin="5"/>
         <TextBox Name="PurchaseCostTextBox" Grid.Row="3" Grid.Column="1" Margin="5"/>

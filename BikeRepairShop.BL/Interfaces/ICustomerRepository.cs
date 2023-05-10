@@ -12,8 +12,14 @@ namespace BikeRepairShop.BL.Interfaces
     {
         void AddBike(Bike bike);
         List<BikeInfo> GetBikesInfo();
-        Customer GetCustomer(int id);
+        Customer GetCustomer(int? id);
         int GetLastBikeId();
         int GetLastCustomerId();
+        void DeleteBike(int? BikeId);
+        void ChangeBike(BikeInfo bikeInfo);
+        List<CustomerInfo> GetCustomersInfo();
+        void AddCustomer(Customer customerInfo);
+        void ChangeCustomer(CustomerInfo customerInfo);
+        void DeleteCustomer(int? customerID);
     }
 }

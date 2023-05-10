@@ -9,7 +9,16 @@
     <Grid>
         <TabControl>
             <TabItem Header="Customer">
-                
+                <DataGrid Name="CustomerDataGrid">
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Add" Click="MenuItemAddCustomer_Click"></MenuItem>
+                            <MenuItem Header="Delete" Click="MenuItemDeleteCustomer_Click"></MenuItem>
+                            <MenuItem Header="Update" Click="MenuItemUpdateCustomer_Click"></MenuItem>
+                            <MenuItem Header="Show bikes" Click="MenuItemShowBikes_Click"></MenuItem>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                </DataGrid>
             </TabItem>
             <TabItem Header="Bike">
                 <DataGrid Name="BikeDataGrid">

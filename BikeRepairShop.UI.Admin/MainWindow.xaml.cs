@@ -31,8 +31,7 @@ namespace BikeRepairShop.UI.Admin
         private CustomerManager customerManager;
         private ICustomerRepository customerRepo;
         private ObservableCollection<BikeUI> bikes;
-        //TODO fix customer
-        private ObservableCollection<string> customers;
+        private ObservableCollection<CustomerUI> customers;
         public MainWindow()
         {
             InitializeComponent();
@@ -40,9 +39,11 @@ namespace BikeRepairShop.UI.Admin
             customerRepo =new CustomerRepository(conn);
             customerManager = new CustomerManager(customerRepo);
             bikes=new ObservableCollection<BikeUI>(customerManager.GetBikesInfo().Select(x=>new BikeUI(x.Id,x.Description,x.BikeType,x.PurchaseCost,x.Customer.id,x.Customer.description)));
-            customers = new ObservableCollection<string>(new List<string>() { "jos","janine","ivo"});
+            customers = new ObservableCollection<CustomerUI>(customerManager.GetCustomerInfo().Select(x => new CustomerUI(x.ID, x.Name, x.adress, x.Email)));
             BikeDataGrid.ItemsSource = bikes;
             BikeDataGrid.IsReadOnly= true;
+            CustomerDataGrid.ItemsSource = customers;
+            CustomerDataGrid.IsReadOnly = true;
         }
 
         private void MenuItemAddBike_Click(object sender, RoutedEventArgs e)
@@ -58,7 +59,14 @@ namespace BikeRepairShop.UI.Admin
 
         private void MenuItemDeleteBike_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("delbike");
+            BikeUI bike = (BikeUI)BikeDataGrid.SelectedItem;
+            if (bike == null) MessageBox.Show("no selection", "Bike");
+            else {
+                if (MessageBox.Show("Are you sure you want to delete this bike?", "Bike", MessageBoxButton.YesNo) == MessageBoxResult.Yes) {
+                    customerManager.DeleteBike(bike.Id);
+                    bikes.Remove(bike);
+                }
+            }
         }
 
         private void MenuItemUpdateBike_Click(object sender, RoutedEventArgs e)
@@ -69,6 +77,40 @@ namespace BikeRepairShop.UI.Admin
             {
                 WindowBike w = new WindowBike(customerManager,true);
                 w.Bike = bike;
+                w.ShowDialog();
+            }
+        }
+
+        private void MenuItemAddCustomer_Click(object sender, RoutedEventArgs e) {
+            WindowCustomer w = new WindowCustomer(customerManager);
+            if (w.ShowDialog() == true) {
+                customers.Add(w.Customer);
+            }
+        }
+        private void MenuItemDeleteCustomer_Click(object sender, RoutedEventArgs e) {
+            CustomerUI customer = (CustomerUI)CustomerDataGrid.SelectedItem;
+            if (customer == null) MessageBox.Show("no selection", "Customer");
+            else {
+                if (MessageBox.Show("Are you sure you want to delete this customer?", "Customer", MessageBoxButton.YesNo) == MessageBoxResult.Yes) {
+                    customerManager.DeleteCustomer(customer.Id);
+                    customers.Remove(customer);
+                }
+            }
+        }
+        private void MenuItemUpdateCustomer_Click(object sender, RoutedEventArgs e) {
+            CustomerUI customer = (CustomerUI)CustomerDataGrid.SelectedItem;
+            if (customer == null) MessageBox.Show("no selection", "Bike");
+            else {
+                WindowCustomer w = new WindowCustomer(customerManager, true);
+                w.Customer = customer;
+                w.ShowDialog();
+            }
+        }
+        private void MenuItemShowBikes_Click(object sender, RoutedEventArgs e) {
+            CustomerUI customer = (CustomerUI)CustomerDataGrid.SelectedItem;
+            if (customer == null) MessageBox.Show("no selection", "Bike");
+            else {
+                WindowBikePerCustomer w = new WindowBikePerCustomer(customerManager, customer.Id);
                 w.ShowDialog();
             }
         }

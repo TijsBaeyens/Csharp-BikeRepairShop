@@ -16,6 +16,9 @@ namespace BikeRepairShop.UI.Admin.Model
         private BikeType bikeType;
         public BikeType BikeType { get { return bikeType; } set { bikeType = value; OnPropertyChanged(); }  }
         private double purchaseCost;
+        public double PurchaseCost { get { return purchaseCost; } set { purchaseCost = value; OnPropertyChanged(); } }
+        public int CustomerId { get; set; }
+        public string CustomerDescription { get; set; }
 
         public BikeUI(int? id, string description, BikeType bikeType, double purchaseCost, int customerId, string customerDescription)
         {
@@ -29,10 +32,6 @@ namespace BikeRepairShop.UI.Admin.Model
 
         public BikeUI() {
         }
-
-        public double PurchaseCost { get { return purchaseCost; } set { purchaseCost = value; OnPropertyChanged(); } }
-        public int CustomerId { get; set; }
-        public string CustomerDescription { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
         private void OnPropertyChanged(string name=null) {
